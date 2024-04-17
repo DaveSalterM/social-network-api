@@ -2,13 +2,56 @@ const { User, Thoughts } = require("../models");
 
 const userCont = {
 
-  getAllUser(){},
+  getAllUser(req, res) {
+    User.find({})
+      .select("-__v")
+      .populate("friends")
+      .then((user) => res.json(user))
+      .catch((err) => {
+        console.log(err);
+        res.sendStatus(400);
+      });
+  },
 
-  getUserById(){},
+  getUserById({ params }, res) {
+    User.findOne({ _id: params.id })
+      .select("-__v")
+      .populate("thoughts")
+      .populate("friends")
+      .then((user) => {
+        if (!user) {
+          return res
+            .status(404).json({ msg:"User Id not found" });
+        }
+        res.json(user);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.sendStatus(400);
+      });
+  },
 
-  createUser(){},
+  createUser({ body }, res) {
+    User.create(body)
+      .then((user) => res.json(user))
+      .catch((err) => res.json(err));
+  },
 
-  updateUser(){},
+
+  updateUser({ params, body }, res) {
+    User.findOneAndUpdate({ _id: params.id }, body, {
+      new: true,
+      runValidators: true,
+    })
+      .then((user) => {
+        if (!user) {
+          res.status(404).json({ message: "User Id not found" });
+          return;
+        }
+        res.json(user);
+      })
+      .catch((err) => res.json(err));
+  },
 
   deleteUser(){},
 
