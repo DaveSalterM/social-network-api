@@ -1,4 +1,6 @@
 const router = require("express").Router();
+
+// Thought routes
 const {
   getAllThoughts,
   getThoughtsById,

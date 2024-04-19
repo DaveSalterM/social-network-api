@@ -1,5 +1,6 @@
 const { User, Thoughts } = require("../models");
 
+//User controllers, each named accordingly for each task
 const userCont = {
 
   getAllUser(req, res) {

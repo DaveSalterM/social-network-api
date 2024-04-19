@@ -1,4 +1,6 @@
 const router = require("express").Router();
+
+// User routes
 const {
   getAllUser,
   getUserById,
