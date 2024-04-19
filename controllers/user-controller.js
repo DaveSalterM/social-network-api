@@ -45,7 +45,7 @@ const userCont = {
     })
       .then((user) => {
         if (!user) {
-          res.status(404).json({ message: "User Id not found" });
+          res.status(404).json({ msg:"User Id not found" });
           return;
         }
         res.json(user);
@@ -53,13 +53,50 @@ const userCont = {
       .catch((err) => res.json(err));
   },
 
-  deleteUser(){},
+  deleteUser({ params }, res) {
+    User.findOneAndDelete({ _id: params.id })
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({ msg:"User Id not found" });
+        }
+        return Thoughts.deleteMany({ _id: { $in: user.thoughts } });
+      })
+      .then(() => {
+        res.json({ msg: "Deleted" });
+      })
+      .catch((err) => res.json(err));
+  },
 
-  addFriend(){},
+  addFriend({ params }, res) {
+    User.findOneAndUpdate(
+      { _id: params.userId },
+      { $addToSet: { friends: params.friendId } },
+      { new: true, runValidators: true }
+    )
+      .then((user) => {
+        if (!user) {
+          res.status(404).json({ msg:"User Id not found" });
+          return;
+        }
+        res.json(user);
+      })
+      .catch((err) => res.json(err));
+  },
 
-  removeFriend(){},
-
+  removeFriend({ params }, res) {
+    User.findOneAndUpdate(
+      { _id: params.userId },
+      { $pull: { friends: params.friendId } },
+      { new: true }
+    )
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({ msg:"User Id not found" });
+        }
+        res.json(user);
+      })
+      .catch((err) => res.json(err));
+  },
 };
-
 
 module.exports = userCont;
